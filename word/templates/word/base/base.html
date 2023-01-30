@@ -1,0 +1,159 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<title>{% block title %}Japanese{% endblock %}</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="introduction" content="no-reference">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins">
+<link rel="stylesheet" href="{% static 'word/styles/base.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link href="https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel="stylesheet">
+<link rel="icon" href = "{% static 'word/images/logo.png' %}" type="image/x-icon">
+<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+<script src="https://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+{% block site_css %}{% endblock %}
+
+<body>
+
+  <!-- Sidebar/menu -->
+  <nav class="w3-sidebar w3-blue w3-collapse w3-top w3-large w3-padding" style="z-index:3;width:300px;font-weight:bold;"
+    id="mySidebar"><br>
+    <a href="javascript:void(0)" onclick="w3_close()" class="w3-button w3-hide-large w3-display-topleft"
+      style="width:100%;font-size:22px">Close Menu</a>
+    <div class="w3-container">
+      <a href="/" style="text-decoration: none;">
+        <h3 class="w3-padding-64 chinese"><b>日语</b></h3>
+      </a>
+    </div>
+    <div class="w3-bar-block">
+      <a href="{% url 'tone' %}" id="nav_tone" class="w3-bar-item w3-button w3-hover-white chinese">五十音</a>
+      <a id="nav_word" class="w3-bar-item w3-button w3-hover-white chinese">日语单字 <i
+          class="fa fa-caret-right"></i></a>
+      <div id="wordSubnav" class="subnav">
+        <a href="{% url 'word-detail' 'all' %}" style="font-size:16px;"
+          class="w3-bar-item w3-button w3-hover-white chinese">所有</a>
+        {% for detail in type %}
+        <a href="{% url 'word-detail' detail.slug %}" style="font-size:16px;"
+          class="w3-bar-item w3-button w3-hover-white chinese">{{ detail.name }}</a>
+        {% endfor %}
+      </div>
+      <a id="nav_grammer" class="w3-bar-item w3-button w3-hover-white chinese">日语文法 <i
+          class="fa fa-caret-right"></i></a>
+      <div id="grammerSubnav" class="subnav">
+        {% for detail in chapter %}
+        <a href="{% url 'grammer-detail' detail.slug %}" style="font-size:16px;"
+          class="w3-bar-item w3-button w3-hover-white chinese">{{ detail.name }}</a>
+        {% endfor %}
+        <a href="{% url 'grammer-detail' 'other' %}" style="font-size:16px;"
+          class="w3-bar-item w3-button w3-hover-white chinese">额外知识</a>
+      </div>
+      <a id="nav_novel" class="w3-bar-item w3-button w3-hover-white chinese">轻小说 <i
+          class="fa fa-caret-right"></i></a>
+      <div id="novelSubnav" class="subnav">
+        {% for detail in base_novel %}
+        <a href="{% url 'novel-detail' detail.slug %}" style="font-size:16px;"
+          class="w3-bar-item w3-button w3-hover-white chinese">{{ detail.name }}</a>
+        {% endfor %}
+      </div>
+      <a id="nav_song" class="w3-bar-item w3-button w3-hover-white chinese">歌曲 <i
+          class="fa fa-caret-right"></i></a>
+      <div id="songSubnav" class="subnav">
+        {% for detail in base_song %}
+        <a href="{% url 'song-detail' detail.slug %}" style="font-size:16px;"
+          class="w3-bar-item w3-button w3-hover-white chinese">{{ detail.name }}</a>
+        {% endfor %}
+      </div>
+      <a href="{% url 'quiz' %}" id="nav_quiz"
+        class="w3-bar-item w3-button w3-hover-white chinese">测验</a>
+      <a id="nav_train" class="w3-bar-item w3-button w3-hover-white chinese">练习</a>
+      <a id="nav_translate" class="w3-bar-item w3-button w3-hover-white chinese">翻译</a>
+      <a href="/admin/word" id="nav_translate" class="w3-bar-item w3-button w3-hover-white chinese">Admin</a>
+    </div>
+  </nav>
+
+  <!-- Top menu on small screens -->
+  <header class="w3-container w3-top w3-hide-large w3-blue w3-xlarge w3-padding">
+    <a href="javascript:void(0)" class="w3-button w3-blue w3-margin-right" onclick="w3_open()">☰</a>
+    <span class="chinese">日语单字</span>
+  </header>
+
+  <!-- Overlay effect when opening sidebar on small screens -->
+  <div class="w3-overlay w3-hide-large" onclick="w3_close()" style="cursor:pointer" title="close side menu"
+    id="myOverlay"></div>
+
+  <!-- !PAGE CONTENT! -->
+  <div class="w3-main" style="margin-left:340px;margin-right:40px">
+
+    <div class="w3-container" style="margin-top:80px" id="showcase">
+      <h1 class="w3-jumbo chinese"><b>{% block main_heading %}{% endblock %}</b></h1>
+    </div>
+    {% block body %}{% endblock %}
+  </div>
+
+  <!-- W3.CSS Container -->
+  <div class="w3-light-grey w3-container w3-padding-32" style="margin-top:75px;padding-right:58px">
+    <p class="w3-right">Powered by Ong Seng Zi</p>
+  </div>
+  <script>
+    jQuery(document).ready(function () {
+      var num = 0, rotate = 0;
+      var num2 = 0, rotate2 = 0;
+
+      jQuery(".subnav").hide();
+
+      jQuery("#nav_word").click(function () {
+        rotate = openSub(num, rotate, "nav_word", "wordSubnav");
+        num++;
+      });
+
+      jQuery("#nav_grammer").click(function () {
+        rotate2 = openSub(num2, rotate2, "nav_grammer", "grammerSubnav");
+        num2++;
+      });
+
+      jQuery("#nav_novel").click(function () {
+        rotate2 = openSub(num2, rotate2, "nav_novel", "novelSubnav");
+        num2++;
+      });
+
+      jQuery("#nav_song").click(function () {
+        rotate2 = openSub(num2, rotate2, "nav_song", "songSubnav");
+        num2++;
+      });
+    });
+
+    function w3_open() {
+      jQuery("#mySidebar").show("slide", { direction: "left" }, 1000);
+    }
+
+    function w3_close() {
+      jQuery("#mySidebar").fadeOut();
+    }
+
+    function openSub(num, rotate, id, subid) {
+      if (num % 2 == 0 || num == 0) {
+        rotate = 90;
+      }
+      else {
+        rotate = 0;
+      }
+
+      jQuery("#" + subid).slideToggle();
+      jQuery('#' + id + ' i').animate(
+        { deg: rotate },
+        {
+          duration: 250,
+          step: function (now) {
+            jQuery(this).css({ transform: 'rotate(' + now + 'deg)' });
+          }
+        }
+      );
+
+      return rotate;
+    }
+  </script>
+</body>
+
+</html>

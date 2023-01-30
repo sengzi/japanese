@@ -1,0 +1,588 @@
+{% extends 'word/base/base.html'%}
+
+{% load static %}
+
+{% block title %}{{ chapter_name }}{% endblock %}
+
+{% block site_css %}
+<style>
+/* Popup container - can be anything you want */
+/* .popup {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+
+.popup .popuptext {
+  visibility: hidden;
+  width: 160px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 8px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -80px;
+}
+
+
+.popup .popuptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+
+.popup .show {
+  visibility: visible;
+  -webkit-animation: fadeIn 1s;
+  animation: fadeIn 1s;
+}
+
+@-webkit-keyframes fadeIn {
+  from {opacity: 0;} 
+  to {opacity: 1;}
+}
+
+@keyframes fadeIn {
+  from {opacity: 0;}
+  to {opacity:1 ;}
+} */
+
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 3; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
+}
+
+/* Modal Content (image) */
+.modal-content {
+  margin: auto;
+  display: block;
+  width: 80%;
+  max-width: 700px;
+}
+
+/* Caption of Modal Image */
+#caption {
+  margin: auto;
+  display: block;
+  width: 80%;
+  max-width: 700px;
+  text-align: center;
+  color: #ccc;
+  padding: 10px 0;
+  height: 150px;
+}
+
+/* Add Animation */
+.modal-content, #caption {  
+  -webkit-animation-name: zoom;
+  -webkit-animation-duration: 0.6s;
+  animation-name: zoom;
+  animation-duration: 0.6s;
+}
+
+@-webkit-keyframes zoom {
+  from {-webkit-transform:scale(0)} 
+  to {-webkit-transform:scale(1)}
+}
+
+@keyframes zoom {
+  from {transform:scale(0)} 
+  to {transform:scale(1)}
+}
+
+/* The Close Button */
+.close {
+  position: absolute;
+  top: 15px;
+  right: 35px;
+  color: #f1f1f1;
+  font-size: 40px;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.close:hover,
+.close:focus {
+  color: #bbb;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* 100% Image Width on Smaller Screens */
+@media only screen and (max-width: 700px){
+  .modal-content {
+    width: 100%;
+  }
+}
+</style>
+{% endblock %}
+ 
+{% block main_heading %}{{ chapter_name }}{% endblock %}
+
+{% block body %}
+
+{% if error %}
+  <p>Nothing Found</p>
+{% else %}
+    {% if slug != 'other'%}
+        <div class="w3-container" id="word" style="margin-top:75px">
+            <ol>
+                {% for g in grammer %}
+                    <li class="japanese" style="margin-bottom:30px;">
+                        <p class="detectWord"><b>{{ g.grammer|linebreaksbr }}</b></p>
+                        <table>
+                            <tr class="chinese">
+                                <td style="vertical-align: text-top;"><b>意思:</td>
+                                <td class="detectWord">{{ g.meaning|linebreaksbr }}</td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: text-top;"><b><span class="chinese">例句: </b></td>
+                                <td class="detectWord">{{ g.example|linebreaksbr }}</td>
+                            </tr>
+                        </table>
+                    </li>
+                {% endfor %}
+            </ol>
+        </div>
+        <div class="w3-container" id="word" style="margin-top:30px">
+            <div class="w3-half"> 
+                <h3 class="chinese" style="text-align: center;"><b>基本课文</b></h4>
+                <img id="basicImg" src="{{ basic_image.url }}" alt="" style="width: 90%">
+            </div>
+            <div class="w3-half"> 
+                <h3 class="chinese" style="text-align: center;"><b>对话</b></h4>
+                <img id="dialogImg" src="{{ dialog_image.url }}" alt="" style="width: 90%">
+            </div>
+           
+        </div>
+        <div class="w3-container" id="word" style="margin-top:30px">
+            {% if previous_chapter != 0 %}
+                <a href="{% url 'grammer-detail' previous_chapter %}"><button class="w3-button w3-blue w3-hover-black chinese">上一课</button></a>
+            {% endif %}
+            {% if next_chapter != 0 %}
+                <a href="{% url 'grammer-detail' next_chapter %}"><button class="w3-button w3-blue w3-hover-black chinese" style="float: right;">下一课</button></a>
+            {% endif %}
+        </div>
+        <!-- <div class="popup">
+            <span class="popuptext" id="myPopup">A Simple Popup!</span>
+        </div> -->
+        <!-- The Modal -->
+        <div id="myModal" class="modal">
+            <span class="close">&times;</span>
+            <img class="modal-content" id="img01">
+        </div>
+    {% else %}
+        <!-- 月份 / 时刻 / 其他表示时间的词语 -->
+        <div class="w3-container" id="word" style="margin-top:75px">
+            <h1 class="w3-xxxlarge w3-text-blue chinese"><b>月份</b></h1>
+            <table id="japanese">
+                <tr class="chinese">
+                    <th>月</th><th>发音</th><th>月</th><th>发音</th>
+                </tr>
+                <tr>
+                    <td>1月</td><td>いちがつ</td><td>2月</td><td>にがつ</td>
+                </tr>
+                <tr>
+                    <td>3月</td><td>さんがつ</td><td>4月</td><td>しがつ</td>
+                </tr>
+                <tr>
+                    <td>5月</td><td>ごがつ</td><td>6月</td><td>ろくがつ</td>
+                </tr>
+                <tr>
+                    <td>7月</td><td>しちがつ</td><td>8月</td><td>はちがつ</td>
+                </tr>
+                <tr>
+                    <td>9月</td><td>くがつ</td><td>10月</td><td>じゅうがつ</td>
+                </tr>
+                <tr>
+                    <td>11月</td><td>じゅういちがつ</td><td>12月</td><td>じゅうにがつ</td>
+                </tr>
+            </table>
+
+            <br>
+
+            <h1 class="w3-xxxlarge w3-text-blue chinese"><b>时刻</b></h1>
+            <table id="japanese" style="margin-bottom: 30px;">
+                <tr>
+                    <th>1時</th><td>いちじ</td><th>4時</th><td>よじ</td><th>7時</th><td>しちじ</td><th>10時</th><td>じゅうじ</td>
+                </tr>
+                <tr>
+                    <th>2時</th><td>にじ</td><th>5時</th><td>ごじ</td><th>8時</th><td>はちじ</td><th>11時</th><td>じゅういちじ</td>
+                </tr>
+                <tr>
+                    <th>3時</th><td>さんじ</td><th>6時</th><td>ろくじ</td><th>9時</th><td>くじ</td><th>12時</th><td>じゅうにじ</td>
+                </tr>
+                <tr>
+                    <th>0時</th><td>れいじ</td><th>何時</th><td>なんじ</td>
+                </tr>
+            </table>
+
+            <table id="japanese">
+                <tr>
+                    <th>1分</th><td>いっ<b>ぷ</b>ん</td><th>4分</th><td>よん<b>ぷ</b>ん</td><th>7分</th><td>ななふん</td><th>10分</th><td>じゅっ<b>ぷ</b>ん</td>
+                </tr>
+                <tr>
+                    <th>2分</th><td>にふん</td><th>5分</th><td>ごふん</td><th>8分</th><td>はっ<b>ぷ</b>ん</td><th>11分</th><td>じゅういっ<b>ぷ</b>ん</td>
+                </tr>
+                <tr>
+                    <th>3分</th><td>さん<b>ぷ</b>ん</td><th>6分</th><td>ろっ<b>ぷ</b>ん</td><th>9分</th><td>きゅうふん</td><th>15分</th><td>じゅうごふん</td>
+                </tr>
+                <tr>
+                    <th>30分</th><td>さんじゅっ<b>ぷ</b>ん</td><th>45分</th><td>よんじゅうごふん</td><th>何分</th><td>なん<b>ぷ</b>ん</td>
+                </tr>
+            </table>
+
+            <br>
+
+            <h1 class="w3-xxxlarge w3-text-blue chinese"><b>其他表示时间的词语</b></h1>
+            <table id="japanese" style="text-align: center;">
+                <tr>
+                    <td>おととい(一昨日)<br><b class="chinese">前天</b></td>
+                    <td>きのう(昨日)<br><b class="chinese">昨天</b></td>
+                    <td>きょう(今日)<br><b class="chinese">今天</b></td>
+                    <td>あした(明日)<br><b class="chinese">明天</b></td>
+                    <td>あさって(明後日)<br><b class="chinese">后天</b></td>
+                    <td>まいにち(毎日)<br><b class="chinese">每天</b></td>
+                </tr>
+                <tr>
+                    <td>おとといのあさ(一昨日の朝)<br><b class="chinese">前天早晨</b></td>
+                    <td>きのうのあさ(昨日の朝)<br><b class="chinese">昨天早晨</b></td>
+                    <td>けさ(今朝)<br><b class="chinese">今天早晨</b></td>
+                    <td>あしたのあさ(明日の朝)<br><b class="chinese">明天早晨</b></td>
+                    <td>あさってのあさ(明後日の朝)<br><b class="chinese">后天早晨</b></td>
+                    <td>まいあさ(毎朝)<br><b class="chinese">每天早上</b></td>
+                </tr>
+                <tr>
+                    <td>おとといのばん(一昨日の晩)<br><b class="chinese">前天晚上</b></td>
+                    <td>ゆうべ(昨夜)<br><b class="chinese">昨天晚上</b></td>
+                    <td>こんばん(今晩)<br><b class="chinese">今天晚上</b></td>
+                    <td>あしたのばん(明日の晩)<br><b class="chinese">明天晚上</b></td>
+                    <td>ばんってのばん(明後日の晩)<br><b class="chinese">后天晚上</b></td>
+                    <td>まいばん(毎晩)<br><b class="chinese">每天晚上</b></td>
+                </tr>
+                <tr>
+                    <td>せんせんしゅう(先々週)<br><b class="chinese">前个星期</b></td>
+                    <td>せんしゅう(先週)<br><b class="chinese">上个星期</b></td>
+                    <td>こんしゅう(今週)<br><b class="chinese">这个星期</b></td>
+                    <td>らいしゅう(来週)<br><b class="chinese">下个星期</b></td>
+                    <td>さらいしゅう(再来週)<br><b class="chinese">后个星期</b></td>
+                    <td>まいしゅう(毎週)<br><b class="chinese">每个星期</b></td>
+                </tr>
+                <tr>
+                    <td>せんせんげつ(先々月)<br><b class="chinese">前个月</b></td>
+                    <td>せんげつ(先月)<br><b class="chinese">上个月</b></td>
+                    <td>こんげつ(今月)<br><b class="chinese">这个月</b></td>
+                    <td>らいげつ(来月)<br><b class="chinese">下个月</b></td>
+                    <td>さらいげつ(再来月)<br><b class="chinese">后个月</b></td>
+                    <td>まいげつ(毎月)<br><b class="chinese">每个月</b></td>
+                </tr>
+                <tr>
+                    <td>おととし(一昨年)<br><b class="chinese">前年</b></td>
+                    <td>せんねん(先年)<br><b class="chinese">去年</b></td>
+                    <td>こんねん(今年)<br><b class="chinese">这年</b></td>
+                    <td>らいねん(来年)<br><b class="chinese">下年</b></td>
+                    <td>さらいねん(再来年)<br><b class="chinese">后年</b></td>
+                    <td>まいねん(毎年)<br><b class="chinese">每年</b></td>
+                </tr>
+            </table>
+
+        </div>
+        <!-- 亲属的称谓 -->
+        <div class="w3-container" id="word" style="margin-top:75px">
+            <h1 class="w3-xxxlarge w3-text-blue chinese"><b>亲属的称谓</b></h1>
+            <table id="japanese">
+                <tr>
+                    <th>自己的亲属</th><th>别人的亲属</th><th>自己的亲属</th><th>别人的亲属</th>
+                </tr>
+                <tr>
+                    <td>祖父(そふ) - <b>祖父 / 外祖父</b></td>
+                    <td>おじいさん</td>
+                    <td>兄弟(きょうだい) - <b>兄弟 / 兄弟姐妹</b></td>
+                    <td>ご兄弟(ごきょうだい)</td>
+                </tr>
+                <tr>
+                    <td>祖母(そぼ) - <b>祖母 / 外祖母</b></td>
+                    <td>おばあさん</td>
+                    <td>兄(あに) - <b>哥哥</b></td>
+                    <td>お兄さん(おにいさん)</td>
+                </tr>
+                <tr>
+                    <td>両親(りょうしん) - <b>父母</b></td>
+                    <td>ご両親(ごりょうしん)</td>
+                    <td>姉(あね) - <b>姐姐</b></td>
+                    <td>お姉さん(おねえさん)</td>
+                </tr>
+                <tr>
+                    <td>父(ちち) - <b>父亲</b></td>
+                    <td>お父さん(おとうさん)</td>
+                    <td>弟(おとうと) - <b>弟弟</b></td>
+                    <td>弟さん(おとうとさん)</td>
+                </tr>
+                <tr>
+                    <td>はは(ちち) - <b>母亲</b></td>
+                    <td>お母さん(おかあさん)</td>
+                    <td>妹(いもうと) - <b>妹妹</b></td>
+                    <td>妹さん(いもうとさん)</td>
+                </tr>
+                <tr>
+                    <td>息子(むすこ) - <b>儿子</b></td>
+                    <td>息子さん(むすこさん)</td>
+                    <td>おじ - <b>伯伯 / 叔叔 / 舅舅 / 姑父</b></td>
+                    <td>おじさん</td>
+                </tr>
+                <tr>
+                    <td>娘(むすめ) - <b>女儿</b></td>
+                    <td>娘さん / お嬢さん(むすめさん / おじょうさん)</td>
+                    <td>おば - <b>伯母 / 婶婶 / 姑姑 / 舅妈</b></td>
+                    <td>おばさん</td>
+                </tr>
+            </table>
+        </div>
+        <!-- 词类分类表 -->
+        <div class="w3-container" id="word" style="margin-top:75px">
+            <h1 class="w3-xxxlarge w3-text-blue chinese"><b>词类分类表</b></h1>
+            <img src="{% static 'word/images/词类分类表.jpg' %}" alt="" style="width: 70%;">
+        </div>
+        <!-- 量词 -->
+        <div class="w3-container" id="word" style="margin-top:75px">
+            <h1 class="w3-xxxlarge w3-text-blue chinese"><b>量词</b></h1>
+            <table id="japanese">
+                <tr class="chinese">
+                    <th>量词</th>
+                    <th>使用对象</th>
+                    <th>量词</th>
+                    <th>使用对象</th>
+                </tr>
+                <tr class="chinese">
+                    <td class="japanese">~人(にん)</td>
+                    <td>人</td>
+                    <td class="japanese">~本(ほん)</td>
+                    <td>细长的物品: 瓶，铅笔，伞，香蕉等</td>
+                </tr>
+                <tr class="chinese">
+                    <td class="japanese">~台(だい)</td>
+                    <td>机械或车辆: 车，机动车，电脑等</td>
+                    <td class="japanese">~杯(はい)</td>
+                    <td>容器内的饮料: 茶，咖啡，啤酒等</td>
+                </tr>
+                <tr class="chinese">
+                    <td class="japanese">~枚(まい)</td>
+                    <td>薄平物品: 纸，盘子，邮票，衬衫等</td>
+                    <td class="japanese">~匹(ひき)</td>
+                    <td>小动物: 狗，猫，昆虫，鱼等</td>
+                </tr>
+                <tr class="chinese">
+                    <td class="japanese">~冊(さつ)</td>
+                    <td>书，笔记本等</td>
+                    <td class="japanese">~頭(とう)</td>
+                    <td>大动物: 牛，马，象等</td>
+                </tr>
+                <tr class="chinese">
+                    <td class="japanese">~歳(さい)</td>
+                    <td>年龄</td>
+                    <td class="japanese">~羽(わ)</td>
+                    <td>鸟，兔</td>
+                </tr>
+                <tr class="chinese">
+                    <td class="japanese">~回(かい)</td>
+                    <td>次数</td>
+                    <td class="japanese">~番(ばん)</td>
+                    <td>顺序</td>
+                </tr>
+                <tr class="chinese">
+                    <td class="japanese">~着(ちゃく)</td>
+                    <td>衣服等</td>
+                    <td class="japanese">~足(そく)</td>
+                    <td>成对物品: 鞋子，袜子等</td>
+                </tr>
+                <tr class="chinese">
+                    <td class="japanese">~個(こ)</td>
+                    <td>
+                        立体的物品: 鸡蛋，饭团子，球等<br>
+                        空容器或器皿: 箱子，盒子，空罐儿，玻璃杯等<br>
+                        概念性的，抽象的事物: 密码等
+                    </td>
+                    <td class="japanese">~つ</td>
+                    <td>
+                        1 - 9岁的年龄 <br>
+                        立体的物品: 橘子，帽子等<br>
+                        抽象的事物: 谜，选项等<br>
+                        * ~つ 不用于10以上的数字
+                    </td>
+                </tr>
+            </table>
+            <br>
+            <table id="japanese">
+                <tr>
+                    <th></th><th>~つ</th><th>~人</th><th>~台</th><th>~個</th><th>~本</th><th>~杯</th>
+                </tr>
+                <tr>
+                    <td>1</td><td><b>ひと</b>つ</td><td><b>ひとり</b></td><td>いちだい</td><td><b>いっ</b>こ</td><td><b>いっぽ</b>ん</td><td><b>いっぱ</b>い</td>
+                </tr>
+                <tr>
+                    <td>2</td><td><b>ふた</b>つ</td><td><b>ふたり</b></td><td>にだい</td><td>にこ</td><td>にほん</td><td>にはい</td>
+                </tr>
+                <tr>
+                    <td>3</td><td><b>みっ</b>つ</td><td>さんにん</td><td>さんだい</td><td>さんこ</td><td>さん<b>ぽ</b>ん</td><td>さん<b>ぱ</b>い</td>
+                </tr>
+                <tr>
+                    <td>4</td><td><b>よっ</b>つ</td><td>よにん</td><td>よんだい</td><td>よんこ</td><td>よんほん</td><td>よんはい</td>
+                </tr>
+                <tr>
+                    <td>5</td><td><b>いっ</b>つ</td><td>ごにん</td><td>ごだい</td><td>ごこ</td><td>ごほん</td><td>ごはい</td>
+                </tr>
+                <tr>
+                    <td>6</td><td><b>むっ</b>つ</td><td>ろくにん</td><td>ろっだい</td><td><b>ろっ</b>こ</td><td><b>ろっぽ</b>ん</td><td><b>ろっぱ</b>い</td>
+                </tr>
+                <tr>
+                    <td>7</td><td><b>なな</b>つ</td><td>ななにん</td><td>ななだい</td><td>ななこ</td><td>ななほん</td><td>ななはい</td>
+                </tr>
+                <tr>
+                    <td>8</td><td><b>やっ</b>つ</td><td>はちにん</td><td>はちだい</td><td><b>はっ</b>こ</td><td><b>はっぽ</b>ん</td><td><b>はっぱ</b>い</td>
+                </tr>
+                <tr>
+                    <td>9</td><td><b>ここの</b>つ</td><td>きゅうにん</td><td>きゅうだい</td><td>きゅうこ</td><td>きゅっほん</td><td>きゅっはい</td>
+                </tr>
+                <tr>
+                    <td>10</td><td><b>とお</b></td><td>じゅうにん</td><td>じゅうだい</td><td><b>じゅっ</b>こ</td><td><b>じゅっぽ</b>ん</td><td><b>じゅっぱ</b>い</td>
+                </tr>
+            </table>
+        </div>
+        <!-- 量词 -->
+        <div class="w3-container chinese" id="word" style="margin-top:75px; font-size: 18px;">
+            <h1 class="w3-xxxlarge w3-text-blue chinese"><b>“は” 和 “が” 的区别</b></h1>
+            <ol>
+                <li>
+                    <p>提示注意用 “は”，提示主语用 “が”。</p>
+                    <ul>
+                        <li>象の鼻が長いです。(大象鼻子长)</li>
+                    </ul>
+                </li>
+                <li>
+                    <p>对主题进行说明判断时用 “は”，陈述眼前看到的，听到的，实际感受到的事情时用 “が”。</p>
+                    <ul>
+                        <li>東方地方の雪はおおいです。(东北地区雪下得多)</li>
+                        <li>今、雪が降っています。(现在正在下雪)</li>
+                    </ul>
+                </li>
+                <li>
+                    <p>提示已知事物用 “は”，未知事物用 “が”</p>
+                    <ul>
+                        <li>机の上に日本語の教科書があります。それは王さんのです。(桌子上有本日语教科书，那是小王的)</li>
+                        <li>どの人が山下さんですか。(哪位是山下先生？)</li>
+                    </ul>
+                </li>
+                <li>
+                    <p>“は”的指示范围涉及全句，即关联句末的谓语，可以说是句子的大主语；“が”可指示分句中主语，也可以称作是此类句子的小主语</p>
+                    <ul>
+                        <li>母が作るサンドイッチは美味しいです。(妈妈做的三明治很好吃)</li>
+                        <li>先週は宿題が多くて大変でした。(上周作业很多，忙死了)</li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+    {% endif %}
+{% endif %}
+
+<script>
+    const csrftoken = getCookie('csrftoken');
+
+    var modal = document.getElementById("myModal");
+
+    var img = document.getElementById("basicImg");
+    var img2 = document.getElementById("dialogImg");
+    var modalImg = document.getElementById("img01");
+    
+    img.onclick = function(){
+        modal.style.display = "block";
+        modalImg.src = this.src;
+    }
+
+    img2.onclick = function(){
+        modal.style.display = "block";
+        modalImg.src = this.src;
+    }
+
+    var span = document.getElementsByClassName("close")[0];
+
+    span.onclick = function() { 
+        modal.style.display = "none";
+    }
+
+    jQuery('.detectWord').on('click', function(){
+
+        var text = "";
+        var slug = "{{ slug }}";
+        
+        console.log(this);
+
+        if (window.getSelection) {
+            text = window.getSelection().toString();
+        } else if (document.selection && document.selection.type != "Control") {
+            text = document.selection.createRange().text;
+        }
+
+        //var popup = document.getElementById("myPopup");
+        //popup.classList.toggle("show");
+
+        if(text != ""){
+            jQuery.ajax({
+                url: slug,
+                data: {
+                    'word': text,
+                },
+                type: 'POST',
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                },
+            }).done(function(response){
+                if(response != ""){
+                    var japanese = response.split(",");
+                    alert("发音: "+japanese[1]+'\n罗马字: '+japanese[2]+'\n意思: '+japanese[0]);
+                    //console.log(response);
+                }
+            });
+        }
+           
+    });
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
+
+{% endblock %}

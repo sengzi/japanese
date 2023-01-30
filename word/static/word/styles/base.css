@@ -1,0 +1,47 @@
+body, h1, h2, h3, h4, h5 {
+    font-family: "Poppins", sans-serif
+}
+
+body {
+    font-size: 16px;
+}
+
+.w3-half img {
+    margin-bottom: -6px;
+    margin-top: 16px;
+    opacity: 0.8;
+    cursor: pointer
+}
+
+.w3-half img:hover {
+    opacity: 1
+}
+#japanese {
+    font-family: Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+  }
+  
+  #japanese td, #japanese th {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+  
+  #japanese tr:nth-child(even){background-color: #f2f2f2;}
+  
+  #japanese tr:hover {background-color: #ddd;}
+  
+  #japanese th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #2196F3;
+    color: white;
+  }
+
+.japanese{
+  font-family: UD Digi Kyokasho NK-R;
+}
+.chinese{
+  font-family: KaiTi;
+}

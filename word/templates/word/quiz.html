@@ -1,0 +1,84 @@
+{% extends 'word/base/base.html'%}
+
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+ 
+{% block main_heading %}{{ title }}{% endblock %}
+
+{% block body %}
+{% if error %}
+  <p>Nothing Found</p>
+{% else %}
+    <div class="w3-container" id="quiz">
+        <ol>
+            {% for w in word %}
+                <div class="w3-row-padding w3-grayscale" style="margin-bottom:20px">
+                    <li>
+                        <div class="w3-col m2">
+                            <span class="chinese">{{ w.meaning }} [{{ w.type }}]</span>
+                        </div>
+                        <div class="w3-col m10">
+                            <input type="text" name="answer" class="answer">
+                        </div>
+                    </li>
+                </div>
+            {% endfor %}
+        </ol>
+    </div>
+    <div class="w3-container">
+        <p id="mark"></p>
+    </div>
+    <div class="w3-container">
+        <button type="button" id="submitQuiz" class="w3-button w3-blue w3-hover-black">提交</button>
+    </div>
+{% endif %}
+<script>
+    var answer = [];
+</script>
+
+{% for t in word %}
+    <script>
+        answer.push("{{t.japanese_word}}");
+    </script>
+{% endfor %}
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+
+    jQuery(document).ready(function(){
+        
+        var i = 0;
+        var correct = 0;
+        var after_word = '干得不错';
+        var status = 'success';
+        
+        jQuery('#submitQuiz').click(function(){
+            jQuery('.answer').each(function(){
+                
+                if(jQuery(this).val() != answer[i]){
+                    jQuery(this).parent().append("<b><span style='color:red;'>回答错误 答案: "+answer[i]+"</span></b>");
+                }
+                else{
+                    jQuery(this).parent().append("<b><span style='color:#1ed31e;'>回答正确</span></b>");
+                    correct++;
+                }
+
+                i++;
+            });
+
+            if(correct == 0){
+                status = 'error';
+                after_word = '再接再厉';
+            }
+
+            Swal.fire({
+                icon: status,
+                title: "分数: "+correct+"/20",
+                text: after_word,
+            });
+        });
+    });
+
+</script>
+
+{% endblock %}

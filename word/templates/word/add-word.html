@@ -1,0 +1,49 @@
+{% extends 'word/base/base.html'%}
+
+{% load static %}
+
+{% block title %}Add Word{% endblock %}
+ 
+{% block main_heading %}Add Word{% endblock %}
+
+{% block body %}
+
+
+<div class="w3-container" id="services" style="margin-top:75px">
+    <form action="{% url 'addform' %}" method="POST">
+      {% comment %} <div class="w3-section">
+        <label>Name</label>
+        <input class="w3-input w3-border" type="text" name="Name" required>
+      </div>
+      <div class="w3-section">
+        <label>Email</label>
+        <input class="w3-input w3-border" type="text" name="Email" required>
+      </div>
+      <div class="w3-section">
+        <label>Message</label>
+        <input class="w3-input w3-border" type="text" name="Message" required>
+      </div>
+      <div class="w3-container" id="packages" style="margin-top:75px">
+      </div> {% endcomment %}
+        {% csrf_token %}
+        <p>
+            {{ form.as_p }}
+        </p>
+      <button type="submit" class="w3-button w3-block w3-padding-large w3-blue w3-margin-bottom">Submit</button>
+      <a href="{% url 'japanese' %}"><button type="button" class="w3-button w3-block w3-padding-large w3-blue w3-margin-bottom">Cancel</button></a>
+    </form>  
+</div>
+
+{% comment %} <div class="w3-container" id="packages" style="margin-top:75px">
+    <a href="{% url 'japanese' %}"><button type="button" class="w3-button w3-blue w3-padding-large w3-hover-black" style="float:right;margin-left:10px;">Cancel</button></a>
+    <a href="{% url 'addform' %}"><button type="submit" class="w3-button w3-blue w3-padding-large w3-hover-black" style="float:right;">Submit</button></a>
+</div> {% endcomment %}
+
+<script>
+    jQuery(document).ready(function(){
+        jQuery("input").addClass("w3-input w3-border");
+        jQuery("select").addClass("w3-input w3-border");
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends 'word/base/base.html'%}
+
+{% load static %}
+
+{% block title %}{{ novel }}{% endblock %}
+
+{% block site_css %}
+
+{% endblock %}
+
+{% block main_heading %}{{ novel }}{% endblock %}
+
+{% block body %}
+
+{% if error %}
+<p>Nothing Found</p>
+{% else %}
+
+<div class="w3-container" id="word" style="margin-top:75px">
+    {% for chapter in novel_chapter %}
+    <a href="{% url 'novel-chapter-detail' chapter.slug %}"><button type="button"
+        style="margin-bottom:10px;" class="w3-button w3-blue w3-padding-large
+        w3-hover-black chinese">{{ chapter.name }}</button></a>
+    {% endfor %}
+</div>
+
+{% endif %}
+
+{% endblock %}

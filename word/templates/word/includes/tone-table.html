@@ -1,0 +1,42 @@
+<div class="w3-half">
+    <h3 class="japanese" style="text-align:center">{{type}} - ひらがな (平仮名)</h3>
+    <table id="japanese">
+        <tr>
+            <th></th>
+            <th >あ段</th>
+            <th >い段</th>
+            <th >う段</th>
+            <th >え段</th>
+            <th >お段</th>
+        </tr>
+        {% for t in hira_tone %}
+        <tr>
+            <td class="japanese">{{ t.0 }}段</td>
+            {% for word in t %}
+                <td class="japanese">{{ word }}</td>
+            {% endfor %} 
+        </tr>
+        {% endfor %} 
+    </table>
+    </div>
+<div class="w3-half">
+    <h3 class="japanese" style="text-align:center">{{type}} - かたかな (片仮名)</h3>
+    <table id="japanese">
+        <tr>
+            <th></th>
+            <th >あ段</th>
+            <th >い段</th>
+            <th >う段</th>
+            <th >え段</th>
+            <th >お段</th>
+        </tr>
+        {% for t in kata_tone %}
+        <tr>
+            <td class="japanese">{{ t.0 }}段</td>
+            {% for word in t %}
+                <td class="japanese">{{ word }}</td>
+            {% endfor %} 
+        </tr>
+        {% endfor %} 
+    </table>
+</div>

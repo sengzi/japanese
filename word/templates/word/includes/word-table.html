@@ -1,0 +1,51 @@
+<table id="japanese">
+    <tr>
+        <th class="chinese">日语</th>
+        <th class="chinese">日汉字</th>
+        {% if slug == 'verb' %}
+        <th class="chinese"><a href="{% url 'grammer-detail' 'chapter-5' %}">ます形</a></th>
+        <th class="chinese"><a href="{% url 'grammer-detail' 'chapter-14' %}">て形</a></th>
+        <th class="chinese"><a href="{% url 'grammer-detail' 'chapter-19' %}">ない形</a></th>
+        <th class="chinese"><a href="{% url 'grammer-detail' 'chapter-21' %}">た形</a></th>
+        <th class="chinese"><a href="{% url 'grammer-detail' 'chapter-29' %}">命令形</a></th>
+        <th class="chinese"><a href="{% url 'grammer-detail' 'chapter-30' %}">意志形</a></th>
+        <th class="chinese"><a href="{% url 'grammer-detail' 'chapter-37' %}">ば形</a></th>
+        <th class="chinese"><a href="{% url 'grammer-detail' 'chapter-38' %}">可能形</a></th>
+        <th class="chinese"><a href="{% url 'grammer-detail' 'chapter-41' %}">被动形</a></th>
+        <th class="chinese">动词类</th>
+        {% endif %} {% if slug == 'adjective' %}
+        <th class="chinese"><a href="{% url 'grammer-detail' 'chapter-9' %}">形容词类</a></th>
+        {% endif %}
+        <th class="chinese">意思</th>
+        {% if slug == 'all' %}
+        <th class="chinese">语法种类</th>
+        {% endif %}
+
+    </tr>
+    {% for w in word %}
+    <tr id="{{ w.id }}">
+        <td class="japanese japanese_word">
+            <span>{{ w.japanese_word }}</span>
+        </td>
+        <td class="japanese kanji_word"><span>{{ w.kanji_word }}</span></td>
+        {% if slug == 'verb' %}
+        <td class="chinese">{{ w.masu }}</td>
+        <td class="chinese">{{ w.te_word }}</td>
+        <td class="chinese">{{ w.ne_word }}</td>
+        <td class="chinese">{{ w.ta_word }}</td>
+        <td class="chinese">{{ w.meirei }}</td>
+        <td class="chinese">{{ w.ishi }}</td>
+        <td class="chinese">{{ w.ba_word }}</td>
+        <td class="chinese">{{ w.kano }}</td>
+        <td class="chinese">{{ w.passive }}</td>
+        <td class="chinese">{{ w.verb_type }}</td>
+        {% endif %} {% if slug == 'adjective' %}
+        <td class="chinese">{{ w.adjective_type }}</td>
+        {% endif %}
+        <td class="chinese">{{ w.meaning }}</td>
+        {% if slug == 'all' %}
+        <td class="chinese">{{ w.type }}</td>
+        {% endif %}
+        </td>
+        {% endfor %}
+</table>

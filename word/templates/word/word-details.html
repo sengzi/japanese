@@ -1,0 +1,242 @@
+{% extends 'word/base/base.html'%} {% load static %} {% block title %}{{ type_name }}{% endblock %} {% block site_css %}
+<style>
+    .pagination {
+        display: inline-block;
+    }
+    
+    .pagination a {
+        color: black;
+        float: left;
+        padding: 8px 16px;
+        text-decoration: none;
+        transition: background-color .3s;
+        border: 1px solid #ddd;
+        margin: 0 4px;
+    }
+</style>
+{% endblock %} {% block main_heading %}{{ type_name }}{% endblock %} {% block body %} {% if error %}
+<p>Nothing Found</p>
+{% else %}
+<div class="w3-container" id="packages" style="margin-top:75px">
+    {% comment %} <a href="{% url 'japanese' %}"><button type="button"
+      class="w3-button w3-blue w3-padding-large w3-hover-black" style="float:right;margin-left:10px;">Back</button></a>
+    <a href="{% url 'addform' %}"><button type="button" class="w3-button w3-blue w3-padding-large w3-hover-black"
+      style="float:right;">+ Add Word</button></a>{% endcomment %}
+    <button type="button" class="w3-button w3-blue w3-padding-large w3-hover-black" id="test" style="float:right;">Test</button>
+    <button type="button" class="w3-button w3-blue w3-padding-large w3-hover-black" id="submittest" style="float:right;">Submit</button>
+    <button type="button" class="w3-button w3-blue w3-padding-large w3-hover-black" id="resettest" style="float:right;">Reset</button>
+</div>
+<div class="w3-container" id="word" style="margin-top:75px">
+  <input type="text" value="{{ search }}" id="search_bar" class="w3-input w3-border" style="width: 20%;display: inline;">
+  <button type="button" class="w3-button w3-blue w3-padding-large w3-hover-black" id="search_btn">Search</button>
+  <button type="button" class="w3-button w3-blue w3-padding-large w3-hover-black" id="clear_btn">Clear</button>
+</div>
+<div class="w3-container" id="word" style="margin-top:75px">
+    {% include 'word/includes/word-table.html' with word=word type=type_name slug=slug %}
+</div>
+{% comment %}
+<div class="w3-container" id="add" style="margin-top:10px">
+    <button class="w3-button w3-blue w3-hover-black" id="addword">+</button>
+</div> {% endcomment %}
+<div class="w3-container" id="add" style="margin-top:10px">
+    <div class="pagination">
+        {% if word.has_previous %}
+        <a href="?page=1{% if search %}&search={{ search }}{% endif %}">&laquo; first</a>
+        <a href="?page={{ word.previous_page_number }}{% if search %}&search={{ search }}{% endif %}">previous</a> {% endif %} {% if word.has_next %}
+        <a href="?page={{ word.next_page_number }}{% if search %}&search={{ search }}{% endif %}">next</a>
+        <a href="?page={{ word.paginator.num_pages }}{% if search %}&search={{ search }}{% endif %}">last &raquo;</a> {% endif %}
+    </div>
+    <span style="float:right;">
+    Page {{ word.number }} of {{ word.paginator.num_pages }}.
+  </span>
+</div>
+
+<script>
+    var all_type = [];
+</script>
+
+{% for t in all_type %}
+<script>
+    all_type.push("{{t}}");
+</script>
+{% endfor %}
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    //const csrftoken = getCookie('csrftoken');
+    function search_word(){
+      if(window.location.href.includes("?page")){
+          if(jQuery("#search_bar").val() == ""){
+            window.location.replace(window.location.href.split("&")[0]);
+          }
+          else{
+            window.location.replace(window.location.href.split("&")[0]+"&search="+jQuery("#search_bar").val());
+          }
+        }
+        else{
+          if(jQuery("#search_bar").val() == ""){
+            window.location.replace(window.location.href.split("?")[0]);
+          }
+          else{
+            window.location.replace(window.location.href.split("?")[0]+"?search="+jQuery("#search_bar").val());
+          }
+        }
+    }
+
+    jQuery(document).ready(function() {
+        var i = 0,
+            correct = 0,
+            after_word = '干得不错',
+            status = 'success';
+
+        jQuery("#submittest").hide();
+        jQuery("#resettest").hide();
+
+        jQuery('#search_bar').keypress(function (e) {
+          if (e.which == 13) {
+            search_word();
+          }
+        });
+
+        jQuery("#search_btn").click(function() {
+          search_word();
+        });
+        jQuery("#clear_btn").click(function() {
+          if(window.location.href.includes("?page")){
+            window.location.replace(window.location.href.split("&")[0]);
+          }
+          else{
+            window.location.replace(window.location.href.split("?")[0]);
+          }
+        });
+        jQuery("#test").click(function() {
+            jQuery(".japanese_word span").hide();
+            jQuery(".japanese_word").prepend("<input type='text'>");
+            jQuery(".kanji_word span").hide();
+            jQuery("#test").hide();
+            jQuery("#submittest").show();
+        });
+        jQuery("#submittest").click(function() {
+            jQuery('.japanese_word input').each(function() {
+                if (jQuery(this).val() != jQuery(this).next().text()) {
+                    jQuery(this).next().show();
+                    jQuery(this).next().attr("style", "color:red;");
+                } else {
+                    correct++;
+                }
+
+            });
+
+            if (correct == 0) {
+                status = 'error';
+                after_word = '再接再厉';
+            }
+
+            Swal.fire({
+                icon: status,
+                title: "分数: " + correct + "/20",
+                text: after_word,
+            });
+
+            jQuery(".kanji_word span").show();
+            jQuery("#submittest").hide();
+            jQuery("#resettest").show();
+        });
+        jQuery("#resettest").click(function() {
+            var correct = 0;
+            var after_word = '干得不错';
+            var status = 'success';
+
+            jQuery(".japanese_word span").hide();
+            jQuery("#submittest").show();
+            jQuery("#resettest").hide();
+            jQuery(".kanji_word span").hide();
+
+            jQuery('.japanese_word input').each(function() {
+                jQuery(this).val("");
+            });
+        });
+
+        //when click addword
+        /*jQuery("#addword").click(function(){
+          var rowCount = jQuery('#japanese tr').length;
+          var type = "{{ type_name }}";
+
+          //when add save button
+          if(i == 0){
+            jQuery("#add").append('<button class="w3-button w3-blue w3-hover-black" id="save">Save</button>');
+          }
+          
+          //when add one more row with input
+          jQuery("#japanese").append('<tr id="'+rowCount+'" class="newRow"><td><input type="text" class="w3-input w3-border" id="japaneseWord'+i+'" name="japanese_word" ></td><td><input type="text" id="kanjiWord'+i+'" class="w3-input w3-border" name="kanji_word" ></td><td><input type="text" id="meaning'+i+'" class="w3-input w3-border" name="meaning" required></td>"');
+
+          if(type == "所有日文"){
+            jQuery("#"+rowCount).append("<td><select id='type"+i+"' name='type' class='w3-input w3-border' ><option value=''>选择种类</option></select></td>");
+          }
+
+          for(var num = 0; num < all_type.length; num++){
+            jQuery("#type"+i).append("<option value='"+(num+1)+"'>"+all_type[num]+"</option>");
+          }
+          
+          i++;
+        });
+        jQuery("#add").on('click', '#save', function () {
+          var num = 0;
+          jQuery(".newRow").each(function(){
+            var id = jQuery(this).attr("id");
+            var word = jQuery("#japaneseWord"+num).val();
+            var kanji = jQuery("#kanjiWord"+num).val();
+            var meaning = jQuery("#meaning"+num).val();
+            var type_val = jQuery("#type"+num).val();
+            var type_text = jQuery("#type"+num+" option[value="+type_val+"]").text();
+            var slug = "{{ slug }}";
+            var japanese_type = "{{ type_name }}";
+
+            //console.log(word+" "+kanji+" "+meaning+" "+type_val+" "+type_text);
+            jQuery.ajax({
+              url: slug,
+              data: {
+                'japanese_word': word,
+                'kanji_word': kanji,
+                'meaning': meaning,
+                'type': type_val,
+              },
+              type: 'POST',
+              beforeSend: function (xhr) {
+                  xhr.setRequestHeader("X-CSRFToken", csrftoken);
+              },
+            }).done(function(response){
+              jQuery("#"+id).children().remove();
+              jQuery("#"+id).append('<td class="japanese">'+word+'</td><td class="japanese">'+kanji+'</td><td class="chinese">'+meaning+'</td>');
+              jQuery("#"+id).removeAttr("class");
+
+              if(japanese_type == "所有日文"){
+                jQuery("#"+id).append('<td class="chinese">'+type_text+'</td>');
+              }
+            });
+
+            num++;
+
+          });
+
+          jQuery("#save").remove();
+          i = 0;
+        });*/
+    });
+    /*function getCookie(name) {
+let cookieValue = null;
+if (document.cookie && document.cookie !== '') {
+const cookies = document.cookie.split(';');
+for (let i = 0; i < cookies.length; i++) {
+  const cookie = cookies[i].trim();
+  // Does this cookie string begin with the name we want?
+  if (cookie.substring(0, name.length + 1) === (name + '=')) {
+      cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+      break;
+  }
+}
+}
+return cookieValue;
+} */
+</script>
+
+{% endif %} {% endblock %}

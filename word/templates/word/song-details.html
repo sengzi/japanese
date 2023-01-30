@@ -1,0 +1,53 @@
+{% extends 'word/base/base.html'%}
+
+{% load static %}
+
+{% block title %}{{ song }}{% endblock %}
+
+{% block site_css %}
+<style>
+    iframe {
+        display: block;
+        border-style:none;
+        width: 50%;
+        height: 400px;
+        margin: 0 auto;
+        background-color: #777;
+    }
+</style>
+{% endblock %}
+
+{% block main_heading %}{{ song }}{% endblock %}
+
+{% block body %}
+
+{% if error %}
+<p>Nothing Found</p>
+{% else %}
+<div class="w3-container" id="content">
+    <br> <h4>Artist: {{ artist }}</h4>
+</div>
+<div class="w3-container" id="content" style="margin-top:75px">
+    <!-- <iframe src="https://www.youtube.com/embed/{{ link }}">
+    </iframe> -->
+    <audio controls>
+        <source src="/files/song/{{ link }}.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+</div>
+<div class="w3-container" id="content" style="margin-top:75px">
+    <div class="w3-half">
+        {% for c in content %}
+        <span class="japanese" style="font-size: 20px;margin-top: 15px;">{{ c | safe }}</span><br>
+        {% endfor %}
+    </div>
+    <div class="w3-half">
+        {% for m in meaning %}
+        <span class="chinese" style="font-size: 21px;">{{ m | safe }}</span><br>
+        {% endfor %}
+    </div>
+</div>
+
+{% endif %}
+
+{% endblock %}

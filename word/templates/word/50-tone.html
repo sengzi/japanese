@@ -1,0 +1,22 @@
+{% extends 'word/base/base.html'%}
+
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+ 
+{% block main_heading %}{{ title }}{% endblock %}
+
+{% block body %}
+
+    <div class="w3-container" id="add" style="margin-top:10px">
+        <div class="w3-row-padding">
+            {% include 'word/includes/tone-table.html' with hira_tone=hira_tone kata_tone=kata_tone type="五十音" %}
+        </div> 
+    </div>  
+    <div class="w3-container" id="add" style="margin-top:10px">
+        <div class="w3-row-padding">
+            {% include 'word/includes/tone-table.html' with hira_tone=voiced_hika kata_tone=voiced_kata type="浊音" %}
+        </div> 
+    </div>
+
+{% endblock %}
